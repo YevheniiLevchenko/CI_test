@@ -37,28 +37,8 @@ jobs:
       - name: Run SwiftFormat
         run: swiftformat . --lint --strict
 
-      - name: Debug Secrets Availability
-        # 'name', 'env', and 'run' are all aligned at the same level
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          echo "--- Debugging Secrets ---"
-          if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
-            echo "❌ Error: TELEGRAM_BOT_TOKEN secret is NOT set."
-          else
-            echo "✅ Success: TELEGRAM_BOT_TOKEN secret is set."
-            echo "   Token Hint: ${TELEGRAM_BOT_TOKEN:0:4}...${TELEGRAM_BOT_TOKEN: -4}"
-          fi
-
-          if [ -z "$TELEGRAM_CHAT_ID" ]; then
-            echo "❌ Error: TELEGRAM_CHAT_ID secret is NOT set."
-          else
-            echo "✅ Success: TELEGRAM_CHAT_ID secret is set."
-          fi
-          echo "-------------------------"
-
       - name: Notify Telegram
+        if: always() # Important: This runs the step even if the build fails
         run: |
           STATUS="✅ Build succeeded"
           if [ "${{ job.status }}" != "success" ]; then
