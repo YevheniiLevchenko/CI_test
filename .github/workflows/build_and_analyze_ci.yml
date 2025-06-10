@@ -1,4 +1,4 @@
-name: Xcode - Build and Analyze
+name: Xcode - Build and Test
 
 on:
   push:
@@ -31,11 +31,16 @@ jobs:
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' \
             CODE_SIGNING_ALLOWED=NO
 
-      - name: Install SwiftFormat
-        run: brew install swiftformat
-
-      - name: Run SwiftFormat
-        run: swiftformat . --lint --strict
+      # --- RUN TESTS ---
+      - name: Run tests
+        run: |
+          # This command executes the test action defined in your scheme.
+          # The job will fail if any of your tests fail.
+          xcodebuild test \
+            -project CI_test.xcodeproj \
+            -scheme CI_test \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' \
+            CODE_SIGNING_ALLOWED=NO
 
       - name: Notify Telegram
         if: always() # Important: This runs the step even if the build fails
